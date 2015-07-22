@@ -1,0 +1,22 @@
+---
+title: "Automobile Gasoline Milage Analysis"
+author: "Yasser Gonzalez --- http://yassergonzalez.com"
+date: "July 2015"
+output:
+  pdf_document: default
+---
+
+# Introduction
+
+For additional information, see Henderson and Velleman [1].
+
+# Exploratory Data Analysis
+
+# Regression Models Analysis
+
+# Conclusions
+
+# References
+
+1.  Henderson and Velleman (1981). Building multiple regression models 
+    interactively. *Biometrics*, **37**, pages 391-411.
