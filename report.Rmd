@@ -1,7 +1,8 @@
 ---
-title: "Automobile Gasoline Milage Analysis"
+title: "Automobile Gasoline Mileage Analysis"
 author: "Yasser Gonzalez --- http://yassergonzalez.com"
 date: "July 2015"
+graphics: yes
 output:
   pdf_document: default
 ---
@@ -12,6 +13,42 @@ For additional information, see Henderson and Velleman [1].
 
 # Exploratory Data Analysis
 
+```{r packages, echo = FALSE, results = "hide"}
+library("knitr")
+library("dplyr", warn.conflicts = FALSE)
+library("ggplot2")
+```
+
+The data set of interest was loaded into R and tidied (see the R code in the 
+Appendix). The following table shows six selected rows from the resulting 
+data set.
+
+```{r dataset, echo = FALSE}
+data("mtcars")
+
+mtcars <- mtcars %>%
+    add_rownames("car") %>%
+    mutate(am = ifelse(am == 0, "automatic", "manual"))
+
+kable(head(mtcars, n = 6))
+```
+
+Given that we are interested in comparing gas mileage of cars with automatic 
+or manual transmission, the analysis begins with a boxplot of the 
+associated mpg distributions.
+
+```{r boxplot, fig.width = 5, fig.height = 2.5, fig.align = "center", echo = FALSE}
+ggplot(mtcars, aes(x = am, y = mpg)) +
+    geom_boxplot() +
+    labs(x = NULL) +
+    coord_flip()
+```
+
+The plot suggests that, among the group of studied cars, manual transmission
+cars have better gas mileage (as in higher mpg values) than cars with 
+automatic transmission. This claim is studied in more detail in the next
+section with a regression analysis.
+
 # Regression Models Analysis
 
 # Conclusions
@@ -20,3 +57,24 @@ For additional information, see Henderson and Velleman [1].
 
 1.  Henderson and Velleman (1981). Building multiple regression models 
     interactively. *Biometrics*, **37**, pages 391-411.
+
+
+# Appendix
+
+This appendix shows the R code fragments executed to obtain the 
+reported results.
+
+1. Loading the necessary R packages.
+
+```{r ref.label = "packages", eval = FALSE}
+```
+
+2. Loading and tidying the data set.
+
+```{r ref.label = "dataset", eval = FALSE}
+```
+
+3. Boxplot of mpg.
+
+```{r ref.label = "boxplot", eval = FALSE}
+```
