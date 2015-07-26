@@ -1,5 +1,5 @@
 ---
-title: "Automobile Gasoline Mileage Analysis"
+title: "Car Fuel Efficiency Analysis"
 author: "Yasser Gonzalez --- http://yassergonzalez.com"
 date: "July 2015"
 graphics: yes
@@ -7,14 +7,18 @@ output:
   pdf_document: default
 ---
 
-# Introduction
+# Executive Summary
 
-`mtcars` data set.
-
-See the following publication for additional information about this data set:
-
-> Henderson and Velleman (1981). "Building multiple regression models 
-> interactively". *Biometrics*, **37**, pages 391-411.
+This report presents the results of an analysis of the fuel efficiency of a group of cars.
+Specifically, the study addresses the question of whether automatic or manual cars are 
+more fuel-efficient, and attempts to quantify the difference between the two.
+The fuel efficiency is measured in miles per gallon (`mpg`). In addition to `mpg`
+and the transmission type (`am`), the information available about the cars include
+the number of cylinders (`cyl`), horsepower (`hp`), weight (`wt`), engine type (`vs`), 
+among other relevant characteristics. The study shows that the transmission type alone
+does not provide enough information to make a well-supported claim about the fuel efficiency 
+of a car. The remainder of the report provides the details of the statistical analysis 
+that was carried out.
 
 # Exploratory Data Analysis
 
@@ -24,9 +28,9 @@ library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 ```
 
-The data set of interest was loaded into R and tidied (see the R code in 
-the Appendix). The following table shows six selected rows from the 
-resulting data set.
+The data set in question was loaded into R and tidied (see the R code in 
+the Appendix). The following table shows a number of rows selected from the 
+resulting data set (it contains `r nrow(mtcars)` observations in total).
 
 ```{r dataset, echo = FALSE}
 library("datasets")
@@ -35,15 +39,15 @@ data("mtcars")
 mtcars <- mtcars %>%
     add_rownames("car") %>%
     mutate(am = ifelse(am == 0, "Automatic", "Manual")) %>%
-    mutate(vs = ifelse(vs == 0, "V-engine", "Straight engine"))
+    mutate(vs = ifelse(vs == 0, "V", "Straight"))
 ```
 
 ```{r echo = FALSE}
-kable(head(mtcars, n = 6))
+kable(head(mtcars, n = 5))
 ```
 
-Given that we are interested in comparing gas mileage of cars with automatic 
-or manual transmission, we begin the analysis with a boxplot of the 
+Given that we are interested in comparing the fuel efficiency of cars with 
+automatic or manual transmissions, we begin the analysis with a boxplot of the 
 associated `mpg` distributions.
 
 ```{r boxplot, fig.width = 5, fig.height = 2.5, fig.align = "center", echo = FALSE}
@@ -53,7 +57,7 @@ ggplot(mtcars, aes(x = am, y = mpg)) +
     coord_flip()
 ```
 
-The plot suggests that, among the group of studied cars, manual transmission
+The plot above suggests that, among the group of studied cars, manual transmission
 cars have better fuel efficiency (as in higher `mpg` values) than cars with 
 automatic transmission. This claim is studied in more detail with a regression 
 analysis in the next section.
@@ -113,7 +117,8 @@ to explain the `mpg` values than the `only_am` model---i.e. that other
 variables influence the fuel efficiency of the cars besides the transmission 
 type. In fact, the coefficient corresponding to the `am` dummy variable 
 associated with manual transmission in the `all_vars` model is approximately 
-`r round(all_vars_coef[2, 1], 2)` and it is not statistically significantly
+`r round(all_vars_coef[2, 1], 2)` (i.e. the `mpg` difference between manual 
+and automatic transmissions) and it is not statistically significantly
 different from zero at the 1\% level. 
 
 Summarizing, the transmission type does not seem to have a significant impact 
