@@ -9,7 +9,12 @@ output:
 
 # Introduction
 
-For additional information, see Henderson and Velleman [1].
+`mtcars` data set.
+
+See the following publication for additional information about this data set:
+
+> Henderson and Velleman (1981). "Building multiple regression models 
+> interactively". *Biometrics*, **37**, pages 391-411.
 
 # Exploratory Data Analysis
 
@@ -19,50 +24,104 @@ library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 ```
 
-The data set of interest was loaded into R and tidied (see the R code in the 
-Appendix). The following table shows six selected rows from the resulting 
-data set.
+The data set of interest was loaded into R and tidied (see the R code in 
+the Appendix). The following table shows six selected rows from the 
+resulting data set.
 
 ```{r dataset, echo = FALSE}
+library("datasets")
 data("mtcars")
 
 mtcars <- mtcars %>%
     add_rownames("car") %>%
-    mutate(am = ifelse(am == 0, "automatic", "manual"))
+    mutate(am = ifelse(am == 0, "Automatic", "Manual")) %>%
+    mutate(vs = ifelse(vs == 0, "V-engine", "Straight engine"))
 
 kable(head(mtcars, n = 6))
 ```
 
 Given that we are interested in comparing gas mileage of cars with automatic 
-or manual transmission, the analysis begins with a boxplot of the 
-associated mpg distributions.
+or manual transmission, we begin the analysis with a boxplot of the 
+associated `mpg` distributions.
 
 ```{r boxplot, fig.width = 5, fig.height = 2.5, fig.align = "center", echo = FALSE}
 ggplot(mtcars, aes(x = am, y = mpg)) +
+    labs(x = NULL, y = "Miles per gallon") +
     geom_boxplot() +
-    labs(x = NULL) +
     coord_flip()
 ```
 
 The plot suggests that, among the group of studied cars, manual transmission
-cars have better gas mileage (as in higher mpg values) than cars with 
-automatic transmission. This claim is studied in more detail in the next
-section with a regression analysis.
+cars have better fuel efficiency (as in higher `mpg` values) than cars with 
+automatic transmission. This claim is studied in more detail with a regression 
+analysis in the next section.
 
 # Regression Models Analysis
 
-# Conclusions
+Motivated by what was observed in the boxplot, we construct first a linear model for 
+explaining the `mpg` values in terms of the `am` variable (i.e. the transmission type) 
+coded as a dummy variable as follows:
 
-# References
+```{r}
+only_am <- lm(mpg ~ am, data = mtcars)
+```
 
-1.  Henderson and Velleman (1981). Building multiple regression models 
-    interactively. *Biometrics*, **37**, pages 391-411.
+```{r include = FALSE}
+only_am_coef <- summary(only_am)$coefficients
+```
 
+The fitted coefficients table is shown in the Appendix. The coefficient 
+corresponding to the `am` dummy variable associated with manual transmission 
+in effect indicates that manual transmission cars have better fuel efficiency 
+than automatic cars---roughly `r round(only_am_coef[2, 1], 1)` miles per gallon 
+better on average. The associated $p$-value also suggests that this result is 
+statistically significant at the 1% level. However, the $R^2$ obtained is 
+`r round(summary(only_am)$r.squared, 2)`, indicating that the model leaves
+most of the variance of `mpg` unexplained. This is not a surprising result, 
+considering that this model predicts the same `mpg` value for all manual 
+transmission cars; and similarly, the same `mpg` value for all cars 
+with automatic transmission. These results suggest that the model denoted as 
+`only_am` is a poor fit for explaining the cars' fuel efficiency.
+
+We construct another linear model next. It considers all the other variables 
+in the data set as predictors (in addition to `am`) in order to understand 
+if there are other factors that influence the `mpg` values. The second linear 
+model can be fitted as follows:
+
+```{r}
+all_vars <- lm(mpg ~ am + ., data = select(mtcars, -car))
+```
+
+```{r include = FALSE}
+all_vars_coef <- summary(all_vars)$coefficients
+```
+
+In this case, the obtained $R^2$ score is approximately 
+`r round(summary(all_vars)$r.squared, 2)`, which means that the model explains 
+roughly `r round(100 * summary(all_vars)$r.squared, 0)`% of the variance of 
+the `mpg` values. A likelihood ratio tests for nested 
+models comparing `only_am` and `all_vars` indicates a statistically
+significant reduction at the 1\% level of the residual sum of squares
+by including the other variables (see the details in the Appendix). 
+Also, a plot included in the Appendix illustrates an appropriate 
+distribution of the residuals. 
+
+These results evidence that the `all_vars` linear model is a better fit 
+to explain the `mpg` values than the `only_am` model---i.e. that other 
+variables influence the fuel efficiency of the cars besides the transmission 
+type. In fact, the coefficient corresponding to the `am` dummy variable 
+associated with manual transmission in the `all_vars` model is approximately 
+`r round(all_vars_coef[2, 1], 2)` and it is not statistically significantly
+different from zero at the 1\% level. 
+
+Summarizing, the transmission type does not seem to have a significant impact 
+on the fuel efficiency of the cars after having accounted for the effect of 
+other variables such as the number of cylinders and the weight of the car.
 
 # Appendix
 
-This appendix shows the R code fragments executed to obtain the 
-reported results.
+This appendix contains supplementary figures and the R code fragments not shown 
+in the main section to ease the reproducibility of the results.
 
 1. Loading the necessary R packages.
 
@@ -74,7 +133,35 @@ reported results.
 ```{r ref.label = "dataset", eval = FALSE}
 ```
 
-3. Boxplot of mpg.
+3. Code to generate the `mpg` boxplot.
 
 ```{r ref.label = "boxplot", eval = FALSE}
+```
+
+4. Coefficients table for the `only_am` model.
+
+```{r echo = FALSE}
+kable(only_am_coef)
+```
+
+5. Coefficients table for the `all_vars` model.
+
+```{r echo = FALSE}
+kable(all_vars_coef)
+```
+
+6. Comparison of the `only_am` and `all_vars` linear models.
+
+```{r comment = NA}
+anova(only_am, all_vars)
+```
+
+7. Plot of the residuals of the `all_vars` linear model.
+
+```{r fig.width = 5, fig.height = 3, fig.align = "center"}
+data <- data.frame(residuals = residuals(all_vars),
+                   fitted_values = predict(all_vars))
+ggplot(data, aes(x = fitted_values, y = residuals)) +
+    labs(x = "Fitted values",  y = "Residuals") +
+    geom_point()
 ```
