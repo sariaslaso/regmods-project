@@ -36,7 +36,9 @@ mtcars <- mtcars %>%
     add_rownames("car") %>%
     mutate(am = ifelse(am == 0, "Automatic", "Manual")) %>%
     mutate(vs = ifelse(vs == 0, "V-engine", "Straight engine"))
+```
 
+```{r echo = FALSE}
 kable(head(mtcars, n = 6))
 ```
 
@@ -62,7 +64,7 @@ Motivated by what was observed in the boxplot, we construct first a linear model
 explaining the `mpg` values in terms of the `am` variable (i.e. the transmission type) 
 coded as a dummy variable as follows:
 
-```{r}
+```{r only_am}
 only_am <- lm(mpg ~ am, data = mtcars)
 ```
 
@@ -88,7 +90,7 @@ in the data set as predictors (in addition to `am`) in order to understand
 if there are other factors that influence the `mpg` values. The second linear 
 model can be fitted as follows:
 
-```{r}
+```{r all_vars}
 all_vars <- lm(mpg ~ am + ., data = select(mtcars, -car))
 ```
 
@@ -152,8 +154,12 @@ kable(all_vars_coef)
 
 6. Comparison of the `only_am` and `all_vars` linear models.
 
-```{r comment = NA}
+```{r eval = FALSE}
 anova(only_am, all_vars)
+```
+
+```{r echo = FALSE}
+kable(anova(only_am, all_vars))
 ```
 
 7. Plot of the residuals of the `all_vars` linear model.
