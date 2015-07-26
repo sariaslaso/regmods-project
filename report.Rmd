@@ -9,16 +9,19 @@ output:
 
 # Executive Summary
 
-This report presents the results of an analysis of the fuel efficiency of a group of cars.
-Specifically, the study addresses the question of whether automatic or manual cars are 
-more efficient, and attempts to quantify the difference between the two.
-The fuel efficiency is measured in miles per gallon (`mpg`). In addition to `mpg`
-and the transmission type (`am`), the information available about the cars include
-the number of cylinders (`cyl`), horsepower (`hp`), weight (`wt`), engine type (`vs`), 
-among other relevant characteristics. The study shows that the transmission type alone
-does not provide enough information to make a well-supported claim about the fuel efficiency 
-of a car. The remainder of the report provides the details of the statistical analysis 
-that was carried out to arrive at that conclusion.
+This report presents the results of an analysis of the fuel efficiency
+of a group of cars. Specifically, the study addresses the question of
+whether automatic or manual cars are more efficient, and attempts to
+quantify the difference between the two. The fuel efficiency is
+measured in miles per gallon (`mpg`). In addition to `mpg` and the
+transmission type (`am`), the information available about the cars
+include the number of cylinders (`cyl`), horsepower (`hp`), weight
+(`wt`), engine type (`vs`), among other relevant characteristics. The
+study shows that the transmission type alone does not provide enough
+information to make a well-supported claim about the fuel efficiency
+of a car. The remainder of the report provides the details of the
+statistical analysis that was carried out to arrive at that
+conclusion.
 
 # Exploratory Data Analysis
 
@@ -28,9 +31,10 @@ library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 ```
 
-The data set in question was loaded into R and tidied (see the R code in the Appendix). 
-The following table shows a number of rows selected from the resulting data set---it 
-contains `r nrow(mtcars)` observations in total.
+The data set in question was loaded into R and tidied (see the R code
+in the Appendix). The following table shows a number of rows selected
+from the resulting data set---it contains `r nrow(mtcars)`
+observations in total.
 
 ```{r dataset, echo = FALSE}
 library("datasets")
@@ -46,9 +50,9 @@ mtcars <- mtcars %>%
 kable(head(mtcars, n = 5))
 ```
 
-Given that we are interested in comparing the fuel efficiency of cars with 
-automatic or manual transmissions, we begin the analysis with a boxplot of the 
-associated `mpg` distributions.
+Given that we are interested in comparing the fuel efficiency of cars
+with automatic or manual transmissions, we begin the analysis with a
+boxplot of the associated `mpg` distributions.
 
 ```{r boxplot, fig.width = 5, fig.height = 2.5, fig.align = "center", echo = FALSE}
 ggplot(mtcars, aes(x = am, y = mpg)) +
@@ -57,16 +61,17 @@ ggplot(mtcars, aes(x = am, y = mpg)) +
     coord_flip()
 ```
 
-The plot above suggests that, among the group of studied cars, manual transmission
-cars have better fuel efficiency (as in higher `mpg` values) than cars with 
-automatic transmission. This claim is studied in more detail with a regression 
-analysis in the next section.
+The plot above suggests that, among the group of studied cars, manual
+transmission cars have better fuel efficiency (as in higher `mpg`
+values) than cars with automatic transmission. This claim is studied
+in more detail with a regression analysis in the next section.
 
 # Regression Models Analysis
 
-Motivated by what was observed in the boxplot, we construct first a linear model for 
-explaining the `mpg` values in terms of the `am` variable (i.e. the transmission type) 
-coded as a dummy variable as follows:
+Motivated by what was observed in the boxplot, we construct first a
+linear model for explaining the `mpg` values in terms of the `am`
+variable (i.e. the transmission type) coded as a dummy variable as
+follows:
 
 ```{r only_am}
 only_am <- lm(mpg ~ am, data = mtcars)
@@ -76,23 +81,25 @@ only_am <- lm(mpg ~ am, data = mtcars)
 only_am_coef <- summary(only_am)$coefficients
 ```
 
-The fitted coefficients table is shown in the Appendix. The coefficient 
-corresponding to the `am` dummy variable associated with manual transmission 
-in effect indicates that manual transmission cars have better fuel efficiency 
-than automatic cars---roughly `r round(only_am_coef[2, 1], 1)` miles per gallon 
-better on average. The associated $p$-value also suggests that this result is 
-statistically significant at the 1% level. However, the $R^2$ obtained is 
-`r round(summary(only_am)$r.squared, 2)`, indicating that the model leaves
-most of the variance of `mpg` unexplained. This is not a surprising result, 
-considering that this model predicts the same `mpg` value for all manual 
-transmission cars; and similarly, the same `mpg` value for all cars 
-with automatic transmission. These results suggest that the model denoted as 
-`only_am` is a poor fit for explaining the cars' fuel efficiency.
+The fitted coefficients table is shown in the Appendix. The
+coefficient corresponding to the `am` dummy variable associated with
+manual transmission in effect indicates that manual transmission cars
+have better fuel efficiency than automatic cars---roughly
+`r round(only_am_coef[2, 1], 1)` miles per gallon better on average.
+The associated $p$-value also suggests that this result is
+statistically significant at the 1% level. However, the $R^2$ obtained
+is `r round(summary(only_am)$r.squared, 2)`, indicating that the model
+leaves most of the variance of `mpg` unexplained. This is not a
+surprising result, considering that this model predicts the same `mpg`
+value for all manual transmission cars; and similarly, the same `mpg`
+value for all cars with automatic transmission. These results suggest
+that the model denoted as `only_am` is a poor fit for explaining the
+cars' fuel efficiency.
 
-We construct another linear model next. It considers all the other variables 
-in the data set as predictors (in addition to `am`) in order to understand 
-if there are other factors that influence the `mpg` values. The second linear 
-model can be fitted as follows:
+We construct another linear model next. It considers all the other
+variables in the data set as predictors (in addition to `am`) in order
+to understand if there are other factors that influence the `mpg`
+values. The second linear model can be fitted as follows:
 
 ```{r all_vars}
 all_vars <- lm(mpg ~ am + ., data = select(mtcars, -car))
@@ -102,33 +109,35 @@ all_vars <- lm(mpg ~ am + ., data = select(mtcars, -car))
 all_vars_coef <- summary(all_vars)$coefficients
 ```
 
-In this case, the obtained $R^2$ score is approximately 
-`r round(summary(all_vars)$r.squared, 2)`, which means that the model explains 
-roughly `r round(100 * summary(all_vars)$r.squared, 0)`% of the variance of 
-the `mpg` values. A likelihood ratio tests for nested 
-models comparing the models `only_am` and `all_vars` indicates a statistically
-significant reduction at the 1\% level of the residual sum of squares
-by including the other variables (see the details in the Appendix). 
-Also, a plot included in the Appendix shows an appropriate 
-distribution of the residuals. 
+In this case, the obtained $R^2$ score is approximately
+`r round(summary(all_vars)$r.squared, 2)`, which means that the model
+explains roughly `r round(100 * summary(all_vars)$r.squared, 0)`% of
+the variance of the `mpg` values. A likelihood ratio tests for nested
+models comparing the models `only_am` and `all_vars` indicates a
+statistically significant reduction at the 1\% level of the residual
+sum of squares by including the other variables (see the details in
+the Appendix). Also, a plot included in the Appendix shows an
+appropriate distribution of the residuals.
 
-These results evidence that the `all_vars` linear model is a better fit 
-to explain the `mpg` values than the `only_am` model---i.e. that other 
-variables influence the fuel efficiency of the cars besides the transmission 
-type. In fact, the coefficient corresponding to the `am` dummy variable 
-associated with manual transmission in the `all_vars` model is approximately 
-`r round(all_vars_coef[2, 1], 2)` (i.e. the `mpg` difference between manual 
-and automatic transmissions) and it is not statistically significantly
-different from zero at the 1\% level. 
+These results evidence that the `all_vars` linear model is a better
+fit to explain the `mpg` values than the `only_am` model---i.e. that
+other variables influence the fuel efficiency of the cars besides the
+transmission type. In fact, the coefficient corresponding to the `am`
+dummy variable associated with manual transmission in the `all_vars`
+model is approximately `r round(all_vars_coef[2, 1], 2)` (i.e. the
+`mpg` difference between manual and automatic transmissions) and it is
+not statistically significantly different from zero at the 1\% level.
 
-Summarizing, the transmission type does not seem to have a significant impact 
-on the fuel efficiency of the cars after having accounted for the effect of 
-other variables such as the number of cylinders and the weight of the car.
+Summarizing, the transmission type does not seem to have a significant
+impact on the fuel efficiency of the cars after having accounted for
+the effect of other variables such as the number of cylinders and the
+weight of the car.
 
 # Appendix
 
-This appendix contains supplementary figures and the R code fragments not shown 
-in the main sections to ease the reproducibility of the results.
+This appendix contains supplementary figures and the R code fragments
+not shown in the main sections to ease the reproducibility of the
+results.
 
 1. Loading the necessary R packages.
 
