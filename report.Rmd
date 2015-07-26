@@ -4,7 +4,8 @@ author: "Yasser Gonzalez --- http://yassergonzalez.com"
 date: "July 2015"
 graphics: yes
 output:
-  pdf_document: default
+  pdf_document:
+    keep_tex: yes
 ---
 
 # Executive Summary
