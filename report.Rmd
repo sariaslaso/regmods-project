@@ -140,34 +140,34 @@ This appendix contains supplementary figures and the R code fragments
 not shown in the main sections to ease the reproducibility of the
 results.
 
-1. Loading the necessary R packages.
+## Loading the necessary R packages
 
 ```{r ref.label = "packages", eval = FALSE}
 ```
 
-2. Loading and tidying the data set.
+## Loading and tidying the data set
 
 ```{r ref.label = "dataset", eval = FALSE}
 ```
 
-3. Code to generate the `mpg` boxplot.
+## Code to generate the `mpg` boxplot
 
 ```{r ref.label = "boxplot", eval = FALSE}
 ```
 
-4. Coefficients table for the `only_am` model.
+## Coefficients table for the `only_am` model
 
 ```{r echo = FALSE}
 kable(only_am_coef)
 ```
 
-5. Coefficients table for the `all_vars` model.
+## Coefficients table for the `all_vars` model
 
 ```{r echo = FALSE}
 kable(all_vars_coef)
 ```
 
-6. Comparison of the `only_am` and `all_vars` linear models.
+## Comparison of the `only_am` and `all_vars` linear models
 
 ```{r eval = FALSE}
 anova(only_am, all_vars)
@@ -177,7 +177,7 @@ anova(only_am, all_vars)
 kable(anova(only_am, all_vars))
 ```
 
-7. Plot of the residuals of the `all_vars` linear model.
+## Plot of the residuals of the `all_vars` linear model
 
 ```{r fig.width = 5, fig.height = 3, fig.align = "center"}
 data <- data.frame(residuals = residuals(all_vars),
