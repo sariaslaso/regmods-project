@@ -11,14 +11,14 @@ output:
 
 This report presents the results of an analysis of the fuel efficiency of a group of cars.
 Specifically, the study addresses the question of whether automatic or manual cars are 
-more fuel-efficient, and attempts to quantify the difference between the two.
+more efficient, and attempts to quantify the difference between the two.
 The fuel efficiency is measured in miles per gallon (`mpg`). In addition to `mpg`
 and the transmission type (`am`), the information available about the cars include
 the number of cylinders (`cyl`), horsepower (`hp`), weight (`wt`), engine type (`vs`), 
 among other relevant characteristics. The study shows that the transmission type alone
 does not provide enough information to make a well-supported claim about the fuel efficiency 
 of a car. The remainder of the report provides the details of the statistical analysis 
-that was carried out.
+that was carried out to arrive at that conclusion.
 
 # Exploratory Data Analysis
 
@@ -28,9 +28,9 @@ library("dplyr", warn.conflicts = FALSE)
 library("ggplot2")
 ```
 
-The data set in question was loaded into R and tidied (see the R code in 
-the Appendix). The following table shows a number of rows selected from the 
-resulting data set (it contains `r nrow(mtcars)` observations in total).
+The data set in question was loaded into R and tidied (see the R code in the Appendix). 
+The following table shows a number of rows selected from the resulting data set---it 
+contains `r nrow(mtcars)` observations in total.
 
 ```{r dataset, echo = FALSE}
 library("datasets")
@@ -106,10 +106,10 @@ In this case, the obtained $R^2$ score is approximately
 `r round(summary(all_vars)$r.squared, 2)`, which means that the model explains 
 roughly `r round(100 * summary(all_vars)$r.squared, 0)`% of the variance of 
 the `mpg` values. A likelihood ratio tests for nested 
-models comparing `only_am` and `all_vars` indicates a statistically
+models comparing the models `only_am` and `all_vars` indicates a statistically
 significant reduction at the 1\% level of the residual sum of squares
 by including the other variables (see the details in the Appendix). 
-Also, a plot included in the Appendix illustrates an appropriate 
+Also, a plot included in the Appendix shows an appropriate 
 distribution of the residuals. 
 
 These results evidence that the `all_vars` linear model is a better fit 
@@ -128,7 +128,7 @@ other variables such as the number of cylinders and the weight of the car.
 # Appendix
 
 This appendix contains supplementary figures and the R code fragments not shown 
-in the main section to ease the reproducibility of the results.
+in the main sections to ease the reproducibility of the results.
 
 1. Loading the necessary R packages.
 
